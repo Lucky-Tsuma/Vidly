@@ -3,13 +3,24 @@ const express = require('express')
 const app = express()
 const log = require('./logger')
 require('dotenv').config()
+// express.json(), express.static() and express.urlencoded() are examples of built in middleware functions in express.js
+
 app.use(express.json()) // express.json() returns a middleware function that parses the body of the request for JSON data and parses it to JSON incase it finds it. Sets the req.body property after that.
+app.use(express.static(`${__dirname}/public`)) //__dirname fetched from the module wrapper function
+app.use(express.urlencoded({extended:true}))
+
 app.use(log) //This is how we create and use custom middleware in express.json
 
-// express.json(), express.static() and express.urlencoded() are examples of built in middleware functions in express.js
-app.use(express.static(`${__dirname}/public`)) //__dirname fetched from the module wrapper function
+// We have many third party middleware. Usage be minimised. Impacts app speed. Use only when needed. The two most important are helmet and morgan
+const helmet = require('helmet') // secures express.js apps by setting various HTTP headers
+const morgan = require('morgan') // logs HTTP requests made to the server
 
-app.use(express.urlencoded({extended:true}))
+if(app.get('env') === 'development') {
+    console.log('Morgan enabled...')
+    app.use(morgan('tiny'))
+}
+
+app.use(helmet())
 
 const port = process.env.PORT || 3000
 const schema = Joi.object({
