@@ -1,8 +1,10 @@
 const Joi = require('joi')
 const express = require('express')
 const app = express()
+const log = require('./logger')
 require('dotenv').config()
-app.use(express.json()) // To enable parsing of json in the request body
+app.use(express.json()) // express.json() returns a middleware function that parses the body of the request for JSON data and parses it to JSON incase it finds it. Sets the req.body property after that.
+app.use(log)
 
 const port = process.env.PORT || 3000
 const schema = Joi.object({
