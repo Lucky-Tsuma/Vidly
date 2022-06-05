@@ -4,7 +4,12 @@ const app = express()
 const log = require('./logger')
 require('dotenv').config()
 app.use(express.json()) // express.json() returns a middleware function that parses the body of the request for JSON data and parses it to JSON incase it finds it. Sets the req.body property after that.
-app.use(log)
+app.use(log) //This is how we create and use custom middleware in express.json
+
+// express.json(), express.static() and express.urlencoded() are examples of built in middleware functions in express.js
+app.use(express.static(`${__dirname}/public`)) //__dirname fetched from the module wrapper function
+
+app.use(express.urlencoded({extended:true}))
 
 const port = process.env.PORT || 3000
 const schema = Joi.object({
@@ -17,6 +22,9 @@ const validateGenre = (genre) => {
     return schema.validate(genre)
 }
 
+app.post('/urlencodedstuff', (req, res) => {
+    res.json(req.body)
+})
 
 app.get('/vidly.com/api', (_req, res) => {
     res.send('You are on vidly homepage.')

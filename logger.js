@@ -1,4 +1,4 @@
-const log = (req, res, next) => {
+const log = (_req, _res, next) => {
     console.log("This is a custom middleware functon!")
     next()
 }
