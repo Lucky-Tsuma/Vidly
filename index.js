@@ -2,18 +2,30 @@ const Joi = require('joi')
 const express = require('express')
 const app = express()
 const log = require('./logger')
-require('dotenv').config()
 // express.json(), express.static() and express.urlencoded() are examples of built in middleware functions in express.js
+// We have many third party middleware. Usage be minimised. Impacts app speed. Use only when needed. The two most important are helmet and morgan
+require('dotenv').config()
+const helmet = require('helmet') // secures express.js apps by setting various HTTP headers
+const morgan = require('morgan') // logs HTTP requests made to the server
+const config = require('config') //Separate configuration settings for each environment
 
 app.use(express.json()) // express.json() returns a middleware function that parses the body of the request for JSON data and parses it to JSON incase it finds it. Sets the req.body property after that.
 app.use(express.static(`${__dirname}/public`)) //__dirname fetched from the module wrapper function
 app.use(express.urlencoded({extended:true}))
-
 app.use(log) //This is how we create and use custom middleware in express.json
 
-// We have many third party middleware. Usage be minimised. Impacts app speed. Use only when needed. The two most important are helmet and morgan
-const helmet = require('helmet') // secures express.js apps by setting various HTTP headers
-const morgan = require('morgan') // logs HTTP requests made to the server
+const port = config.has('port') ? config.get('port') : 3000 //configuration, more of this concept from line 20
+const genres = []
+
+// configuration, this is what we use to override settings for different environments
+if(config.has('name')) {
+    // config.get will throw an exception for undefined keys to help catch typos and missing values
+    console.log(`Application name: ${config.get('name')}`)
+    // use config.has to test if a configuration value is defined
+    if(config.has('mail.host')) {
+        console.log(`Mail server running: ${config.get('mail.host')}`)
+    }
+}
 
 if(app.get('env') === 'development') {
     console.log('Morgan enabled...')
@@ -22,11 +34,9 @@ if(app.get('env') === 'development') {
 
 app.use(helmet())
 
-const port = process.env.PORT || 3000
 const schema = Joi.object({
     name: Joi.string().min(5).required()
 })
-const genres = []
 
 const validateGenre = (genre) => {
     // returns an object which will have either property with a value the other null {error: "value or undefined", value: "value or undefinded"}
