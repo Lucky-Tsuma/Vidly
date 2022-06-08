@@ -1,0 +1,16 @@
+{
+    "env": {
+        "node": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest"
+    },
+    "ignorePatterns": ["*.json", "README.md", "readme.txt", "*.pdf"],
+    "rules": {
+        "semi": ["error", "never"],
+        "quotes": ["error", "double"]
+    }
+}
